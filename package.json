@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^8.4.1",
-    "@prisma/client": "^7.4.1",
+    "@prisma/client": "^6.19.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^17.3.1",
@@ -18,7 +18,7 @@
     "nanoid": "^5.1.6",
     "next": "16.1.6",
     "octokit": "^5.0.5",
-    "prisma": "^7.4.1",
+    "prisma": "^6.19.2",
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -26,7 +26,7 @@
     "zod": "^4.3.6"
   },
   "prisma": {
-    "seed": "npx tsx prisma/seed.ts"
+    "seed": "node prisma/seed.mjs"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

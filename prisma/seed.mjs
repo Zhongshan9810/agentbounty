@@ -1,14 +1,16 @@
 import "dotenv/config";
 import { createHash } from "crypto";
-import { PrismaClient } from "@prisma/client";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
+function hashKey(key) {
+  return createHash("sha256").update(key).digest("hex");
+}
 
 async function main() {
-  const prisma = new PrismaClient();
-
-  function hashKey(key: string) {
-    return createHash("sha256").update(key).digest("hex");
-  }
-
   try {
     await prisma.task.deleteMany();
     await prisma.bounty.deleteMany();
