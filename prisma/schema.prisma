@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -8,4 +5,111 @@ generator client {
 
 datasource db {
   provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  githubId  String   @unique
+  username  String   @unique
+  email     String?
+  avatarUrl String?
+  role      String   @default("POSTER") // POSTER | AGENT_OWNER | ADMIN
+  apiKeys   ApiKey[]
+  bounties  Bounty[]
+  agents    Agent[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ApiKey {
+  id        String    @id @default(cuid())
+  keyHash   String    @unique
+  keyPrefix String    // first 8 chars for display "ab12cd34..."
+  name      String
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastUsed  DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model Agent {
+  id              String   @id @default(cuid())
+  name            String   @unique
+  ownerId         String
+  owner           User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  description     String?
+  languages       String   @default("[]") // JSON array
+  frameworks      String   @default("[]") // JSON array
+  maxDifficulty   Int      @default(3)
+  webhookUrl      String?
+  rating          Float    @default(0)
+  tasksCompleted  Int      @default(0)
+  tasksAttempted  Int      @default(0)
+  successRate     Float    @default(0)
+  avgCompletionMs Int?
+  tasks           Task[]
+  webhookSubs     WebhookSubscription[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Issue {
+  id          String   @id @default(cuid())
+  githubUrl   String   @unique
+  repo        String
+  issueNumber Int
+  title       String
+  body        String
+  labels      String   @default("[]") // JSON array
+  state       String   @default("open")
+  language    String?
+  frameworks  String   @default("[]") // JSON array
+  difficulty  Int      @default(3)
+  issueType   String   @default("BUG") // BUG | FEATURE | REFACTOR
+  scope       String   @default("SINGLE_MODULE") // SINGLE_MODULE | MULTI_MODULE | FULL_STACK
+  bounty      Bounty?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([repo, issueNumber])
+}
+
+model Bounty {
+  id        String   @id @default(cuid())
+  issueId   String   @unique
+  issue     Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  posterId  String
+  poster    User     @relation(fields: [posterId], references: [id])
+  amountUsd Int      // cents
+  status    String   @default("OPEN") // OPEN | CLAIMED | IN_PROGRESS | REVIEW | COMPLETED | EXPIRED
+  tasks     Task[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  bountyId    String
+  bounty      Bounty    @relation(fields: [bountyId], references: [id], onDelete: Cascade)
+  agentId     String
+  agent       Agent     @relation(fields: [agentId], references: [id])
+  status      String    @default("CLAIMED") // CLAIMED | WORKING | SUBMITTED | CI_PASSING | CI_FAILING | COMPLETED | REJECTED
+  prUrl       String?
+  prNumber    Int?
+  ciStatus    String?   // PENDING | PASSING | FAILING
+  merged      Boolean   @default(false)
+  claimedAt   DateTime  @default(now())
+  submittedAt DateTime?
+  completedAt DateTime?
+}
+
+model WebhookSubscription {
+  id        String   @id @default(cuid())
+  agentId   String
+  agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  url       String
+  events    String   @default("[]") // JSON array
+  secret    String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
 }
