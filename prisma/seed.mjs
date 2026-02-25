@@ -12,7 +12,7 @@ function hashKey(key) {
 
 async function main() {
   try {
-    await prisma.task.deleteMany();
+    await prisma.competition.deleteMany();
     await prisma.bounty.deleteMany();
     await prisma.webhookSubscription.deleteMany();
     await prisma.apiKey.deleteMany();
@@ -75,16 +75,33 @@ async function main() {
     ]);
 
     const bounties = await Promise.all([
-      prisma.bounty.create({ data: { issueId: issues[0].id, posterId: poster.id, amountUsd: 5000, status: "OPEN" } }),
+      prisma.bounty.create({ data: { issueId: issues[0].id, posterId: poster.id, amountUsd: 5000, status: "ACTIVE" } }),
       prisma.bounty.create({ data: { issueId: issues[1].id, posterId: poster.id, amountUsd: 10000, status: "OPEN" } }),
-      prisma.bounty.create({ data: { issueId: issues[2].id, posterId: poster.id, amountUsd: 2500, status: "IN_PROGRESS" } }),
+      prisma.bounty.create({ data: { issueId: issues[2].id, posterId: poster.id, amountUsd: 2500, status: "ACTIVE" } }),
       prisma.bounty.create({ data: { issueId: issues[3].id, posterId: poster.id, amountUsd: 15000, status: "COMPLETED" } }),
     ]);
 
-    await prisma.task.create({ data: { bountyId: bounties[2].id, agentId: codeSweeper.id, status: "SUBMITTED",
-      prUrl: "https://github.com/prisma/prisma/pull/99999", prNumber: 99999, ciStatus: "PASSING" } });
-    await prisma.task.create({ data: { bountyId: bounties[3].id, agentId: deepFix.id, status: "COMPLETED",
-      prUrl: "https://github.com/django/django/pull/88888", prNumber: 88888, ciStatus: "PASSING", merged: true, completedAt: new Date("2026-02-15") } });
+    // --- Competitions: multiple agents racing on the same bounty ---
+
+    // Bounty[2] (Prisma SQL bug, ACTIVE) — two agents competing
+    await prisma.competition.create({ data: { bountyId: bounties[2].id, agentId: codeSweeper.id, status: "CI_PASSING",
+      prUrl: "https://github.com/prisma/prisma/pull/99999", prNumber: 99999, ciStatus: "PASSING",
+      joinedAt: new Date("2026-02-18"), submittedAt: new Date("2026-02-19") } });
+    await prisma.competition.create({ data: { bountyId: bounties[2].id, agentId: deepFix.id, status: "PR_SUBMITTED",
+      prUrl: "https://github.com/prisma/prisma/pull/99998", prNumber: 99998, ciStatus: "PENDING",
+      joinedAt: new Date("2026-02-18"), submittedAt: new Date("2026-02-20") } });
+
+    // Bounty[3] (Django perf, COMPLETED) — one agent won, one lost
+    await prisma.competition.create({ data: { bountyId: bounties[3].id, agentId: deepFix.id, status: "WON",
+      prUrl: "https://github.com/django/django/pull/88888", prNumber: 88888, ciStatus: "PASSING", merged: true,
+      joinedAt: new Date("2026-02-10"), submittedAt: new Date("2026-02-12"), completedAt: new Date("2026-02-15") } });
+    await prisma.competition.create({ data: { bountyId: bounties[3].id, agentId: codeSweeper.id, status: "LOST",
+      prUrl: "https://github.com/django/django/pull/88887", prNumber: 88887, ciStatus: "FAILING",
+      joinedAt: new Date("2026-02-10"), submittedAt: new Date("2026-02-13") } });
+
+    // Bounty[0] (Next.js hydration, OPEN) — one agent just joined, no PR yet
+    await prisma.competition.create({ data: { bountyId: bounties[0].id, agentId: codeSweeper.id, status: "JOINED",
+      joinedAt: new Date("2026-02-22") } });
 
     console.log("Seed complete!");
     console.log("  Dev API keys:");

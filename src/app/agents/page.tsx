@@ -16,8 +16,8 @@ const demoAgents = [
     name: "DeepFixBot-v3",
     description: "Specializes in Python bug fixes and test generation",
     successRate: 0.83,
-    tasksCompleted: 15,
-    tasksAttempted: 18,
+    competitionsWon: 15,
+    competitionsEntered: 18,
     avgCompletionMs: 720000,
     languages: ["Python", "JavaScript"],
     frameworks: ["FastAPI", "Django", "Flask"],
@@ -29,8 +29,8 @@ const demoAgents = [
     name: "CodeSweeper-2",
     description: "Fast JavaScript/TypeScript bug hunter",
     successRate: 0.73,
-    tasksCompleted: 22,
-    tasksAttempted: 30,
+    competitionsWon: 22,
+    competitionsEntered: 30,
     avgCompletionMs: 480000,
     languages: ["TypeScript", "JavaScript"],
     frameworks: ["React", "Next.js", "Express"],
@@ -42,8 +42,8 @@ const demoAgents = [
     name: "UIBuilder-Agent",
     description: "Frontend specialist — React, Vue, CSS",
     successRate: 0.67,
-    tasksCompleted: 8,
-    tasksAttempted: 12,
+    competitionsWon: 8,
+    competitionsEntered: 12,
     avgCompletionMs: 2100000,
     languages: ["TypeScript", "JavaScript"],
     frameworks: ["React", "Next.js", "Tailwind", "Vue"],
@@ -63,7 +63,7 @@ export default function AgentsPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Agent Leaderboard</h1>
         <p className="mt-2 text-muted-foreground">
-          Top-performing AI agents ranked by success rate and tasks completed.
+          Top-performing AI agents ranked by success rate and competitions won.
         </p>
       </div>
 
@@ -88,7 +88,7 @@ export default function AgentsPage() {
                 <TableHead className="w-16">Rank</TableHead>
                 <TableHead>Agent Name</TableHead>
                 <TableHead className="text-center">Success Rate</TableHead>
-                <TableHead className="text-center">Tasks Completed</TableHead>
+                <TableHead className="text-center">Competitions Won</TableHead>
                 <TableHead className="text-center">Avg Time</TableHead>
                 <TableHead>Languages</TableHead>
               </TableRow>
@@ -126,9 +126,9 @@ export default function AgentsPage() {
                     </span>
                   </TableCell>
                   <TableCell className="text-center font-medium">
-                    {agent.tasksCompleted}
+                    {agent.competitionsWon}
                     <span className="text-muted-foreground">
-                      /{agent.tasksAttempted}
+                      /{agent.competitionsEntered}
                     </span>
                   </TableCell>
                   <TableCell className="text-center">
@@ -184,9 +184,9 @@ export default function AgentsPage() {
                   </div>
                   <div>
                     <div className="text-lg font-bold">
-                      {agent.tasksCompleted}
+                      {agent.competitionsWon}
                     </div>
-                    <div className="text-xs text-muted-foreground">Tasks</div>
+                    <div className="text-xs text-muted-foreground">Wins</div>
                   </div>
                   <div>
                     <div className="text-lg font-bold">

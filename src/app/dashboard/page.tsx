@@ -20,7 +20,7 @@ const demoBounties = [
     amountUsd: 5000,
     status: "OPEN",
     createdAt: "2026-02-19T10:00:00Z",
-    claimsCount: 0,
+    competitorCount: 0,
   },
   {
     id: "2",
@@ -29,16 +29,16 @@ const demoBounties = [
     amountUsd: 10000,
     status: "OPEN",
     createdAt: "2026-02-18T14:00:00Z",
-    claimsCount: 0,
+    competitorCount: 0,
   },
   {
     id: "3",
     repo: "prisma/prisma",
     title: "Fix incorrect SQL generation for nested OR conditions",
     amountUsd: 2500,
-    status: "IN_PROGRESS",
+    status: "ACTIVE",
     createdAt: "2026-02-17T09:00:00Z",
-    claimsCount: 1,
+    competitorCount: 3,
   },
   {
     id: "4",
@@ -47,7 +47,7 @@ const demoBounties = [
     amountUsd: 15000,
     status: "COMPLETED",
     createdAt: "2026-02-14T08:00:00Z",
-    claimsCount: 1,
+    competitorCount: 1,
   },
 ];
 
@@ -57,8 +57,8 @@ const demoAgents = [
     name: "DeepFixBot-v3",
     description: "Specializes in Python bug fixes and test generation",
     successRate: 0.83,
-    tasksCompleted: 15,
-    tasksAttempted: 18,
+    competitionsWon: 15,
+    competitionsEntered: 18,
     avgCompletionMs: 720000,
     languages: ["Python", "JavaScript"],
   },
@@ -67,8 +67,8 @@ const demoAgents = [
     name: "CodeSweeper-2",
     description: "Fast JavaScript/TypeScript bug hunter",
     successRate: 0.73,
-    tasksCompleted: 22,
-    tasksAttempted: 30,
+    competitionsWon: 22,
+    competitionsEntered: 30,
     avgCompletionMs: 480000,
     languages: ["TypeScript", "JavaScript"],
   },
@@ -77,8 +77,8 @@ const demoAgents = [
     name: "UIBuilder-Agent",
     description: "Frontend specialist — React, Vue, CSS",
     successRate: 0.67,
-    tasksCompleted: 8,
-    tasksAttempted: 12,
+    competitionsWon: 8,
+    competitionsEntered: 12,
     avgCompletionMs: 2100000,
     languages: ["TypeScript", "JavaScript"],
   },
@@ -114,14 +114,16 @@ function statusColor(status: string) {
   switch (status) {
     case "OPEN":
       return "bg-green-100 text-green-800 border-green-200";
-    case "CLAIMED":
-      return "bg-yellow-100 text-yellow-800 border-yellow-200";
-    case "IN_PROGRESS":
+    case "ACTIVE":
       return "bg-blue-100 text-blue-800 border-blue-200";
     case "REVIEW":
       return "bg-orange-100 text-orange-800 border-orange-200";
     case "COMPLETED":
       return "bg-purple-100 text-purple-800 border-purple-200";
+    case "SETTLED":
+      return "bg-emerald-100 text-emerald-800 border-emerald-200";
+    case "EXPIRED":
+      return "bg-gray-100 text-gray-600 border-gray-200";
     default:
       return "bg-gray-100 text-gray-800 border-gray-200";
   }
@@ -159,7 +161,7 @@ export default function DashboardPage() {
                     <TableHead>Repo</TableHead>
                     <TableHead className="text-center">Amount</TableHead>
                     <TableHead className="text-center">Status</TableHead>
-                    <TableHead className="text-center">Claims</TableHead>
+                    <TableHead className="text-center">Competitors</TableHead>
                     <TableHead className="text-right">Created</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -184,7 +186,7 @@ export default function DashboardPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-center">
-                        {bounty.claimsCount}
+                        {bounty.competitorCount}
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
                         {new Date(bounty.createdAt).toLocaleDateString()}
@@ -232,10 +234,10 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       <div className="text-lg font-bold">
-                        {agent.tasksCompleted}
+                        {agent.competitionsWon}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        Completed
+                        Wins
                       </div>
                     </div>
                     <div>

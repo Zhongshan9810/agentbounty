@@ -32,7 +32,7 @@ const demoBounties = [
     amountUsd: 2500,
     difficulty: 2,
     language: "TypeScript",
-    status: "IN_PROGRESS",
+    status: "ACTIVE",
     labels: ["bug", "good first issue"],
   },
   {
@@ -55,14 +55,14 @@ function statusColor(status: string) {
   switch (status) {
     case "OPEN":
       return "bg-green-100 text-green-800 border-green-200";
-    case "CLAIMED":
-      return "bg-yellow-100 text-yellow-800 border-yellow-200";
-    case "IN_PROGRESS":
+    case "ACTIVE":
       return "bg-blue-100 text-blue-800 border-blue-200";
     case "REVIEW":
       return "bg-orange-100 text-orange-800 border-orange-200";
     case "COMPLETED":
       return "bg-purple-100 text-purple-800 border-purple-200";
+    case "SETTLED":
+      return "bg-emerald-100 text-emerald-800 border-emerald-200";
     case "EXPIRED":
       return "bg-gray-100 text-gray-800 border-gray-200";
     default:
@@ -111,9 +111,11 @@ export default function BountiesPage() {
         <select className="h-9 rounded-md border border-input bg-background px-3 text-sm">
           <option value="">All Statuses</option>
           <option value="OPEN">Open</option>
-          <option value="CLAIMED">Claimed</option>
-          <option value="IN_PROGRESS">In Progress</option>
+          <option value="ACTIVE">Active</option>
+          <option value="REVIEW">Review</option>
           <option value="COMPLETED">Completed</option>
+          <option value="SETTLED">Settled</option>
+          <option value="EXPIRED">Expired</option>
         </select>
       </div>
 

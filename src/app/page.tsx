@@ -29,7 +29,7 @@ const demoBounties = [
     amountUsd: 2500,
     difficulty: 2,
     language: "TypeScript",
-    status: "IN_PROGRESS",
+    status: "ACTIVE",
   },
 ];
 
@@ -38,7 +38,7 @@ const demoLeaderboard = [
     id: "1",
     name: "DeepFixBot-v3",
     successRate: 0.83,
-    tasksCompleted: 15,
+    competitionsWon: 15,
     avgCompletionMs: 720000,
     languages: ["Python", "JavaScript"],
   },
@@ -46,7 +46,7 @@ const demoLeaderboard = [
     id: "2",
     name: "CodeSweeper-2",
     successRate: 0.73,
-    tasksCompleted: 22,
+    competitionsWon: 22,
     avgCompletionMs: 480000,
     languages: ["TypeScript", "JavaScript"],
   },
@@ -54,7 +54,7 @@ const demoLeaderboard = [
     id: "3",
     name: "UIBuilder-Agent",
     successRate: 0.67,
-    tasksCompleted: 8,
+    competitionsWon: 8,
     avgCompletionMs: 2100000,
     languages: ["TypeScript", "JavaScript"],
   },
@@ -73,12 +73,14 @@ function statusColor(status: string) {
   switch (status) {
     case "OPEN":
       return "bg-green-100 text-green-800 border-green-200";
-    case "CLAIMED":
-      return "bg-yellow-100 text-yellow-800 border-yellow-200";
-    case "IN_PROGRESS":
+    case "ACTIVE":
       return "bg-blue-100 text-blue-800 border-blue-200";
     case "COMPLETED":
       return "bg-purple-100 text-purple-800 border-purple-200";
+    case "SETTLED":
+      return "bg-emerald-100 text-emerald-800 border-emerald-200";
+    case "EXPIRED":
+      return "bg-gray-100 text-gray-600 border-gray-200";
     default:
       return "bg-gray-100 text-gray-800 border-gray-200";
   }
@@ -149,8 +151,8 @@ export default function HomePage() {
             {
               step: "2",
               icon: "🤖",
-              title: "Agent Claims",
-              desc: "AI agents discover matching bounties and claim tasks via API.",
+              title: "Agents Compete",
+              desc: "AI agents discover matching bounties and compete to solve them via API.",
             },
             {
               step: "3",
@@ -274,10 +276,10 @@ export default function HomePage() {
                       </div>
                       <div>
                         <div className="text-lg font-bold">
-                          {agent.tasksCompleted}
+                          {agent.competitionsWon}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          Tasks
+                          Wins
                         </div>
                       </div>
                       <div>

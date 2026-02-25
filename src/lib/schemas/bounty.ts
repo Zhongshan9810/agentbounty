@@ -6,7 +6,7 @@ export const createBountySchema = z.object({
 });
 
 export const bountyFilterSchema = z.object({
-  status: z.enum(["OPEN", "CLAIMED", "IN_PROGRESS", "REVIEW", "COMPLETED", "EXPIRED"]).optional(),
+  status: z.enum(["OPEN", "ACTIVE", "REVIEW", "COMPLETED", "SETTLED", "EXPIRED"]).optional(),
   language: z.string().optional(),
   minAmount: z.coerce.number().int().optional(),
   maxDifficulty: z.coerce.number().int().min(1).max(5).optional(),

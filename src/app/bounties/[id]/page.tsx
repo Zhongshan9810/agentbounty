@@ -21,13 +21,13 @@ const demoBountyDetails: Record<
     scope: string;
     labels: string[];
     poster: string;
-    tasks: {
+    competitions: {
       id: string;
       agentName: string;
       status: string;
       prUrl: string | null;
       ciStatus: string | null;
-      claimedAt: string;
+      joinedAt: string;
     }[];
   }
 > = {
@@ -46,7 +46,7 @@ const demoBountyDetails: Record<
     scope: "SINGLE_MODULE",
     labels: ["bug", "app-router"],
     poster: "project-maintainer",
-    tasks: [],
+    competitions: [],
   },
   "2": {
     id: "2",
@@ -63,7 +63,7 @@ const demoBountyDetails: Record<
     scope: "MULTI_MODULE",
     labels: ["enhancement", "help wanted"],
     poster: "project-maintainer",
-    tasks: [],
+    competitions: [],
   },
   "3": {
     id: "3",
@@ -75,19 +75,19 @@ const demoBountyDetails: Record<
     difficulty: 2,
     language: "TypeScript",
     frameworks: ["Prisma"],
-    status: "IN_PROGRESS",
+    status: "ACTIVE",
     issueType: "BUG",
     scope: "SINGLE_MODULE",
     labels: ["bug", "good first issue", "help wanted"],
     poster: "project-maintainer",
-    tasks: [
+    competitions: [
       {
         id: "t1",
         agentName: "CodeSweeper-2",
         status: "SUBMITTED",
         prUrl: "https://github.com/prisma/prisma/pull/99999",
         ciStatus: "PASSING",
-        claimedAt: "2026-02-18T10:00:00Z",
+        joinedAt: "2026-02-18T10:00:00Z",
       },
     ],
   },
@@ -106,14 +106,14 @@ const demoBountyDetails: Record<
     scope: "MULTI_MODULE",
     labels: ["performance", "orm"],
     poster: "project-maintainer",
-    tasks: [
+    competitions: [
       {
         id: "t2",
         agentName: "DeepFixBot-v3",
         status: "COMPLETED",
         prUrl: "https://github.com/django/django/pull/88888",
         ciStatus: "PASSING",
-        claimedAt: "2026-02-14T08:00:00Z",
+        joinedAt: "2026-02-14T08:00:00Z",
       },
     ],
   },
@@ -127,27 +127,25 @@ function statusColor(status: string) {
   switch (status) {
     case "OPEN":
       return "bg-green-100 text-green-800 border-green-200";
-    case "CLAIMED":
-      return "bg-yellow-100 text-yellow-800 border-yellow-200";
-    case "IN_PROGRESS":
+    case "ACTIVE":
       return "bg-blue-100 text-blue-800 border-blue-200";
     case "REVIEW":
       return "bg-orange-100 text-orange-800 border-orange-200";
     case "COMPLETED":
       return "bg-purple-100 text-purple-800 border-purple-200";
+    case "SETTLED":
+      return "bg-emerald-100 text-emerald-800 border-emerald-200";
     case "SUBMITTED":
       return "bg-indigo-100 text-indigo-800 border-indigo-200";
-    case "WORKING":
-      return "bg-blue-100 text-blue-800 border-blue-200";
+    case "EXPIRED":
+      return "bg-gray-100 text-gray-600 border-gray-200";
     default:
       return "bg-gray-100 text-gray-800 border-gray-200";
   }
 }
 
-function taskStatusColor(status: string) {
+function competitionStatusColor(status: string) {
   switch (status) {
-    case "CLAIMED":
-      return "bg-yellow-100 text-yellow-800 border-yellow-200";
     case "WORKING":
       return "bg-blue-100 text-blue-800 border-blue-200";
     case "SUBMITTED":
@@ -290,28 +288,28 @@ export default async function BountyDetailPage({
             </CardContent>
           </Card>
 
-          {/* Task History */}
-          {bounty.tasks.length > 0 && (
+          {/* Competition History */}
+          {bounty.competitions.length > 0 && (
             <Card className="mt-6">
               <CardHeader>
-                <CardTitle className="text-lg">Task History</CardTitle>
+                <CardTitle className="text-lg">Competition History</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {bounty.tasks.map((task) => (
+                  {bounty.competitions.map((entry) => (
                     <div
-                      key={task.id}
+                      key={entry.id}
                       className="flex items-center justify-between rounded-lg border p-4"
                     >
                       <div>
-                        <div className="font-medium">{task.agentName}</div>
+                        <div className="font-medium">{entry.agentName}</div>
                         <div className="text-sm text-muted-foreground">
-                          Claimed{" "}
-                          {new Date(task.claimedAt).toLocaleDateString()}
+                          Joined{" "}
+                          {new Date(entry.joinedAt).toLocaleDateString()}
                         </div>
-                        {task.prUrl && (
+                        {entry.prUrl && (
                           <a
-                            href={task.prUrl}
+                            href={entry.prUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-sm text-blue-600 hover:underline"
@@ -321,25 +319,25 @@ export default async function BountyDetailPage({
                         )}
                       </div>
                       <div className="flex items-center gap-2">
-                        {task.ciStatus && (
+                        {entry.ciStatus && (
                           <Badge
                             variant="outline"
                             className={
-                              task.ciStatus === "PASSING"
+                              entry.ciStatus === "PASSING"
                                 ? "bg-green-100 text-green-800 border-green-200"
-                                : task.ciStatus === "FAILING"
+                                : entry.ciStatus === "FAILING"
                                   ? "bg-red-100 text-red-800 border-red-200"
                                   : "bg-yellow-100 text-yellow-800 border-yellow-200"
                             }
                           >
-                            CI: {task.ciStatus}
+                            CI: {entry.ciStatus}
                           </Badge>
                         )}
                         <Badge
                           variant="outline"
-                          className={taskStatusColor(task.status)}
+                          className={competitionStatusColor(entry.status)}
                         >
-                          {task.status}
+                          {entry.status}
                         </Badge>
                       </div>
                     </div>
@@ -401,7 +399,7 @@ export default async function BountyDetailPage({
               {bounty.status === "OPEN" && (
                 <>
                   <Separator />
-                  <Button className="w-full">Claim This Bounty</Button>
+                  <Button className="w-full">Compete on This Bounty</Button>
                 </>
               )}
             </CardContent>

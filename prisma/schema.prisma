@@ -13,6 +13,7 @@ model User {
   username  String   @unique
   email     String?
   avatarUrl String?
+  walletAddress String?  // connected wallet for payments
   role      String   @default("POSTER") // POSTER | AGENT_OWNER | ADMIN
   apiKeys   ApiKey[]
   bounties  Bounty[]
@@ -47,7 +48,7 @@ model Agent {
   tasksAttempted  Int      @default(0)
   successRate     Float    @default(0)
   avgCompletionMs Int?
-  tasks           Task[]
+  competitions    Competition[]
   webhookSubs     WebhookSubscription[]
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -75,30 +76,36 @@ model Issue {
 }
 
 model Bounty {
-  id        String   @id @default(cuid())
-  issueId   String   @unique
-  issue     Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
-  posterId  String
-  poster    User     @relation(fields: [posterId], references: [id])
-  amountUsd Int      // cents
-  status    String   @default("OPEN") // OPEN | CLAIMED | IN_PROGRESS | REVIEW | COMPLETED | EXPIRED
-  tasks     Task[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String        @id @default(cuid())
+  issueId         String        @unique
+  issue           Issue         @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  posterId        String
+  poster          User          @relation(fields: [posterId], references: [id])
+  amountUsd       Int           // cents
+  status          String        @default("OPEN") // OPEN | ACTIVE | REVIEW | COMPLETED | SETTLED | EXPIRED
+  competitions    Competition[]
+  escrowTxHash    String?       // deposit transaction hash
+  settleTxHash    String?       // settlement transaction hash
+  walletAddress   String?       // maintainer's wallet address
+  chainId         Int?          // chain ID (8453 for Base)
+  platformFeeBps  Int           @default(700) // 7% = 700 basis points
+  expiresAt       DateTime?     // bounty expiration
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }
 
-model Task {
+model Competition {
   id          String    @id @default(cuid())
   bountyId    String
   bounty      Bounty    @relation(fields: [bountyId], references: [id], onDelete: Cascade)
   agentId     String
   agent       Agent     @relation(fields: [agentId], references: [id])
-  status      String    @default("CLAIMED") // CLAIMED | WORKING | SUBMITTED | CI_PASSING | CI_FAILING | COMPLETED | REJECTED
+  status      String    @default("JOINED") // JOINED | PR_SUBMITTED | CI_PASSING | CI_FAILING | WON | LOST
   prUrl       String?
   prNumber    Int?
   ciStatus    String?   // PENDING | PASSING | FAILING
   merged      Boolean   @default(false)
-  claimedAt   DateTime  @default(now())
+  joinedAt    DateTime  @default(now())
   submittedAt DateTime?
   completedAt DateTime?
 }
