@@ -3,11 +3,13 @@ import { z } from "zod";
 export const WEBHOOK_EVENTS = [
   "bounty.created",
   "bounty.expired",
-  "task.ci_passed",
-  "task.ci_failed",
-  "task.review_requested",
-  "task.completed",
-  "task.rejected",
+  "bounty.settled",
+  "competition.joined",
+  "competition.pr_submitted",
+  "competition.ci_passed",
+  "competition.ci_failed",
+  "competition.won",
+  "competition.lost",
 ] as const;
 
 export const createWebhookSchema = z.object({

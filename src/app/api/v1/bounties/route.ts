@@ -85,12 +85,21 @@ export async function GET(req: NextRequest) {
         skip: (pagination.page - 1) * pagination.perPage,
         take: pagination.perPage,
         orderBy: { createdAt: "desc" },
-        include: { issue: true, poster: { select: { username: true, avatarUrl: true } } },
+        include: {
+          issue: true,
+          poster: { select: { username: true, avatarUrl: true } },
+          _count: { select: { competitions: true } },
+        },
       }),
       prisma.bounty.count({ where }),
     ]);
 
-    return paginated(bounties, pagination.page, pagination.perPage, total);
+    const data = bounties.map(({ _count, ...bounty }) => ({
+      ...bounty,
+      competitorCount: _count.competitions,
+    }));
+
+    return paginated(data, pagination.page, pagination.perPage, total);
   } catch (err) {
     return error(err);
   }

@@ -20,20 +20,20 @@ const demoAgents: Record<
     description: string;
     owner: string;
     successRate: number;
-    tasksCompleted: number;
-    tasksAttempted: number;
+    competitionsWon: number;
+    competitionsEntered: number;
     avgCompletionMs: number;
     languages: string[];
     frameworks: string[];
     maxDifficulty: number;
     rating: number;
-    tasks: {
+    competitions: {
       id: string;
       bountyTitle: string;
       repo: string;
       status: string;
       amountUsd: number;
-      claimedAt: string;
+      joinedAt: string;
       completedAt: string | null;
     }[];
   }
@@ -44,21 +44,21 @@ const demoAgents: Record<
     description: "Specializes in Python bug fixes and test generation. Uses advanced AST analysis to understand codebases and generate targeted fixes with comprehensive test coverage.",
     owner: "agent-developer",
     successRate: 0.83,
-    tasksCompleted: 15,
-    tasksAttempted: 18,
+    competitionsWon: 15,
+    competitionsEntered: 18,
     avgCompletionMs: 720000,
     languages: ["Python", "JavaScript"],
     frameworks: ["FastAPI", "Django", "Flask"],
     maxDifficulty: 4,
     rating: 4.2,
-    tasks: [
+    competitions: [
       {
         id: "t1",
         bountyTitle: "Optimize QuerySet evaluation for large prefetch_related chains",
         repo: "django/django",
         status: "COMPLETED",
         amountUsd: 15000,
-        claimedAt: "2026-02-14T08:00:00Z",
+        joinedAt: "2026-02-14T08:00:00Z",
         completedAt: "2026-02-15T02:00:00Z",
       },
       {
@@ -67,7 +67,7 @@ const demoAgents: Record<
         repo: "encode/starlette",
         status: "COMPLETED",
         amountUsd: 3000,
-        claimedAt: "2026-02-10T14:00:00Z",
+        joinedAt: "2026-02-10T14:00:00Z",
         completedAt: "2026-02-10T14:12:00Z",
       },
     ],
@@ -78,21 +78,21 @@ const demoAgents: Record<
     description: "Fast JavaScript/TypeScript bug hunter. Excels at identifying and fixing common JS/TS patterns, runtime errors, and type-safety issues across modern web frameworks.",
     owner: "agent-developer",
     successRate: 0.73,
-    tasksCompleted: 22,
-    tasksAttempted: 30,
+    competitionsWon: 22,
+    competitionsEntered: 30,
     avgCompletionMs: 480000,
     languages: ["TypeScript", "JavaScript"],
     frameworks: ["React", "Next.js", "Express"],
     maxDifficulty: 3,
     rating: 3.8,
-    tasks: [
+    competitions: [
       {
         id: "t3",
         bountyTitle: "Fix incorrect SQL generation for nested OR conditions",
         repo: "prisma/prisma",
         status: "SUBMITTED",
         amountUsd: 2500,
-        claimedAt: "2026-02-18T10:00:00Z",
+        joinedAt: "2026-02-18T10:00:00Z",
         completedAt: null,
       },
       {
@@ -101,7 +101,7 @@ const demoAgents: Record<
         repo: "typescript-eslint/typescript-eslint",
         status: "COMPLETED",
         amountUsd: 2000,
-        claimedAt: "2026-02-12T09:00:00Z",
+        joinedAt: "2026-02-12T09:00:00Z",
         completedAt: "2026-02-12T09:08:00Z",
       },
     ],
@@ -112,21 +112,21 @@ const demoAgents: Record<
     description: "Frontend specialist — React, Vue, CSS. Expert at building and fixing UI components, resolving layout issues, and implementing responsive designs.",
     owner: "agent-developer",
     successRate: 0.67,
-    tasksCompleted: 8,
-    tasksAttempted: 12,
+    competitionsWon: 8,
+    competitionsEntered: 12,
     avgCompletionMs: 2100000,
     languages: ["TypeScript", "JavaScript"],
     frameworks: ["React", "Next.js", "Tailwind", "Vue"],
     maxDifficulty: 3,
     rating: 3.5,
-    tasks: [
+    competitions: [
       {
         id: "t5",
         bountyTitle: "Fix dialog z-index stacking with popovers",
         repo: "radix-ui/primitives",
         status: "COMPLETED",
         amountUsd: 1500,
-        claimedAt: "2026-02-16T11:00:00Z",
+        joinedAt: "2026-02-16T11:00:00Z",
         completedAt: "2026-02-16T11:35:00Z",
       },
     ],
@@ -151,10 +151,8 @@ function DifficultyStars({ level }: { level: number }) {
   );
 }
 
-function taskStatusColor(status: string) {
+function competitionStatusColor(status: string) {
   switch (status) {
-    case "CLAIMED":
-      return "bg-yellow-100 text-yellow-800 border-yellow-200";
     case "WORKING":
       return "bg-blue-100 text-blue-800 border-blue-200";
     case "SUBMITTED":
@@ -244,17 +242,17 @@ export default async function AgentDetailPage({
         </Card>
         <Card>
           <CardContent className="pt-6 text-center">
-            <div className="text-3xl font-bold">{agent.tasksCompleted}</div>
+            <div className="text-3xl font-bold">{agent.competitionsWon}</div>
             <div className="text-sm text-muted-foreground">
-              Tasks Completed
+              Competitions Won
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6 text-center">
-            <div className="text-3xl font-bold">{agent.tasksAttempted}</div>
+            <div className="text-3xl font-bold">{agent.competitionsEntered}</div>
             <div className="text-sm text-muted-foreground">
-              Tasks Attempted
+              Competitions Entered
             </div>
           </CardContent>
         </Card>
@@ -311,15 +309,15 @@ export default async function AgentDetailPage({
         </CardContent>
       </Card>
 
-      {/* Task History */}
+      {/* Competition History */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Task History</CardTitle>
+          <CardTitle className="text-lg">Competition History</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          {agent.tasks.length === 0 ? (
+          {agent.competitions.length === 0 ? (
             <div className="p-6 text-center text-muted-foreground">
-              No tasks yet.
+              No competitions yet.
             </div>
           ) : (
             <Table>
@@ -329,31 +327,31 @@ export default async function AgentDetailPage({
                   <TableHead>Repo</TableHead>
                   <TableHead className="text-center">Bounty</TableHead>
                   <TableHead className="text-center">Status</TableHead>
-                  <TableHead className="text-right">Claimed</TableHead>
+                  <TableHead className="text-right">Joined</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {agent.tasks.map((task) => (
-                  <TableRow key={task.id}>
+                {agent.competitions.map((entry) => (
+                  <TableRow key={entry.id}>
                     <TableCell className="font-medium max-w-xs truncate">
-                      {task.bountyTitle}
+                      {entry.bountyTitle}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {task.repo}
+                      {entry.repo}
                     </TableCell>
                     <TableCell className="text-center font-medium text-green-600">
-                      {formatCurrency(task.amountUsd)}
+                      {formatCurrency(entry.amountUsd)}
                     </TableCell>
                     <TableCell className="text-center">
                       <Badge
                         variant="outline"
-                        className={taskStatusColor(task.status)}
+                        className={competitionStatusColor(entry.status)}
                       >
-                        {task.status}
+                        {entry.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right text-muted-foreground">
-                      {new Date(task.claimedAt).toLocaleDateString()}
+                      {new Date(entry.joinedAt).toLocaleDateString()}
                     </TableCell>
                   </TableRow>
                 ))}
